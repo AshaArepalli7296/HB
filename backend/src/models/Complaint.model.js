@@ -9,6 +9,7 @@ const complaintSchema = new mongoose.Schema({
   description: {
     type: String,
     required: [true, 'Please provide a complaint description'],
+    trim: true,
     maxlength: [500, 'Description cannot exceed 500 characters']
   },
   imageUrl: {
@@ -23,14 +24,27 @@ const complaintSchema = new mongoose.Schema({
   submittedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: [true, 'Complaint must be associated with a student']
   },
   date: {
     type: Date,
     default: Date.now
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: {
+    transform: function (doc, ret) {
+      delete ret.__v;
+    }
+  }
 });
 
-export default mongoose.model('Complaint', complaintSchema);
+// 🔍 Text index for search functionality (by category or status)
+complaintSchema.index({
+  category: 'text',
+  status: 'text',
+  description: 'text'
+});
+
+const Complaint = mongoose.model('Complaint', complaintSchema);
+export default Complaint;

@@ -17,7 +17,7 @@ router.use('/api/v1/students', studentRouter);
 router.use('/api/v1/wardens', wardenRouter);
 router.use('/api/v1/leave', leaveRoutes);
 router.use('/api/v1', roomChangeRoutes);
-router.use('/api/v1/students/complaints', complaintRoutes);
+router.use('/api/v1/complaints', complaintRoutes); 
 
 // router.use('/api/v1/room-application', roomApplicationRoutes);
 

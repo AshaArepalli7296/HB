@@ -1,5 +1,5 @@
 <template>
-  <Navbar_warden/>
+  <Navbar_warden />
   <div class="complaint-management-container">
     <div class="header">
       <h1>Complaint Management</h1>
@@ -23,36 +23,37 @@
       </div>
 
       <div class="search-box">
-        <input 
-          type="text" 
-          v-model="searchQuery" 
+        <input
+          type="text"
+          v-model="searchQuery"
           placeholder="Search complaints..."
-          @input="handleSearch"/>
+          @input="handleSearch" />
       </div>
     </div>
 
     <div class="complaints-grid">
-      <div 
-        class="complaint-card" 
-        v-for="complaint in sortedAndFilteredComplaints" 
-        :key="complaint.id"
-        :class="complaint.status"
-      >
+      <div
+        class="complaint-card"
+        v-for="complaint in sortedAndFilteredComplaints"
+        :key="complaint._id"
+        :class="complaint.status.toLowerCase()">
         <div class="card-header">
-          <span class="complaint-id">{{ complaint.id }}</span>
-          <span :class="['status-badge', complaint.status]">
+          <span class="complaint-id">{{ complaint._id.slice(-6).toUpperCase() }}</span>
+          <span :class="['status-badge', complaint.status.toLowerCase()]">
             {{ formatStatus(complaint.status) }}
           </span>
         </div>
-        
+
         <div class="card-body">
           <div class="detail-row">
-            <span class="detail-label">Student:</span>
-            <span>{{ complaint.studentName }}</span>
+            <span class="detail-label">Submitted By:</span>
+            <span>
+              {{ complaint.submittedBy?.fullName || complaint.submittedBy || 'N/A' }}
+            </span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Room:</span>
-            <span>{{ complaint.room }}</span>
+            <span>{{ complaint.submittedBy?.roomNumber || 'N/A' }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Category:</span>
@@ -62,52 +63,18 @@
             <span class="detail-label">Date:</span>
             <span>{{ formatDate(complaint.date) }}</span>
           </div>
-          <div class="detail-row" v-if="complaint.assignedStaff">
-            <span class="detail-label">Assigned To:</span>
-            <span>{{ getStaffName(complaint.assignedStaff) }}</span>
-          </div>
           <div class="detail-row description">
             <span class="detail-label">Description:</span>
             <p class="truncated-description">{{ complaint.description || 'No description provided' }}</p>
           </div>
+          <div class="detail-row" v-if="complaint.imageUrl">
+            <span class="detail-label">Image:</span>
+            <img :src="complaint.imageUrl" alt="Complaint Image" style="max-width: 100px; border-radius: 6px;" />
+          </div>
         </div>
 
         <div class="card-footer">
-          <div class="action-controls">
-            <div class="staff-assignment">
-              <label>Assign Staff:</label>
-              <select 
-                v-model="complaint.assignedStaff" 
-                @change="updateAssignment(complaint)"
-                :disabled="complaint.status === 'resolved'"
-              >
-                <option value="">Unassigned</option>
-                <option 
-                  v-for="staff in availableStaff(complaint)" 
-                  :value="staff.id" 
-                  :key="staff.id"
-                >
-                  {{ staff.name }} ({{ staff.expertise }})
-                </option>
-              </select>
-            </div>
-            
-            <div class="status-controls">
-              <label>Update Status:</label>
-              <select 
-                v-model="complaint.status" 
-                @change="updateStatus(complaint)"
-              >
-                <option value="pending">Pending</option>
-                <option value="in-progress">In Progress</option>
-                <option value="resolved">Resolved</option>
-              </select>
-            </div>
-          </div>
-          
-          <button @click="showDetails(complaint)" class="details-btn">
-            View Details
-          </button>
+          <button @click="showDetails(complaint)" class="details-btn">View Details</button>
         </div>
       </div>
 
@@ -116,7 +83,7 @@
       </div>
     </div>
 
-    <!-- Complaint Details Modal -->
+    <!-- Modal -->
     <div v-if="selectedComplaint" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -126,15 +93,15 @@
         <div class="modal-body">
           <div class="detail-row">
             <span class="detail-label">ID:</span>
-            <span>{{ selectedComplaint.id }}</span>
+            <span>{{ selectedComplaint._id }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Student:</span>
-            <span>{{ selectedComplaint.studentName }}</span>
+            <span>{{ selectedComplaint.submittedBy?.fullName || selectedComplaint.submittedBy || 'N/A' }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Room:</span>
-            <span>{{ selectedComplaint.room }}</span>
+            <span>{{ selectedComplaint.submittedBy?.roomNumber || 'N/A' }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Category:</span>
@@ -172,12 +139,13 @@
       </div>
     </div>
   </div>
-  <Footer/>
+  <Footer />
 </template>
 
 <script>
 import Navbar_warden from '../../../components/Navbar_warden.vue';
 import Footer from '../../../components/Footer.vue';
+import axios from 'axios';
 
 export default {
   components: {
@@ -191,76 +159,15 @@ export default {
       sortColumn: 'date',
       sortDirection: 'desc',
       selectedComplaint: null,
+      complaints: [],
       staffMembers: [
         { id: 'ST001', name: 'Rajesh Kumar', expertise: 'Electrical' },
         { id: 'ST002', name: 'Priya Sharma', expertise: 'Plumbing' },
         { id: 'ST003', name: 'Amit Patel', expertise: 'Furniture' },
         { id: 'ST004', name: 'Neha Gupta', expertise: 'Cleaning' },
         { id: 'ST005', name: 'Vikram Joshi', expertise: 'Internet' }
-      ],
-      complaints: [
-        { 
-          id: 'CB2023001', 
-          studentName: 'Rahul Sharma', 
-          room: 'A-101', 
-          category: 'Electrical', 
-          date: '2023-07-10', 
-          status: 'pending',
-          assignedStaff: '',
-          description: 'Lights in the room are not working properly, flickering continuously.',
-        },
-        { 
-          id: 'CB2023002', 
-          studentName: 'Priya Patel', 
-          room: 'B-205', 
-          category: 'Plumbing', 
-          date: '2023-07-11', 
-          status: 'in-progress',
-          assignedStaff: 'ST002',
-          description: 'Water leakage from the bathroom faucet, causing water wastage.',
-        },
-        { 
-          id: 'CB2023003', 
-          studentName: 'Amit Singh', 
-          room: 'C-302', 
-          category: 'Furniture', 
-          date: '2023-07-12', 
-          status: 'resolved',
-          assignedStaff: 'ST003',
-          description: 'Study table drawer is stuck and cannot be opened properly.',
-        },
-        { 
-          id: 'CB2023004', 
-          studentName: 'Neha Gupta', 
-          room: 'A-102', 
-          category: 'Cleaning', 
-          date: '2023-07-13', 
-          status: 'pending',
-          assignedStaff: '',
-          description: 'Room needs urgent cleaning, dust accumulation causing allergies.',
-        },
-        { 
-          id: 'CB2023005', 
-          studentName: 'Vikram Joshi', 
-          room: 'D-401', 
-          category: 'Internet', 
-          date: '2023-07-14', 
-          status: 'in-progress',
-          assignedStaff: 'ST005',
-          description: 'WiFi connection drops frequently in this room, needs troubleshooting.',
-        },
-        { 
-          id: 'CB2023006', 
-          studentName: 'Sanjay Verma', 
-          room: 'E-105', 
-          category: 'Electrical', 
-          date: '2023-07-15', 
-          status: 'pending',
-          assignedStaff: '',
-          description: 'Power socket not working in the study area.',
-        },
       ]
-    }
+    };
   },
   computed: {
     pendingCount() {
@@ -274,47 +181,53 @@ export default {
     },
     filteredComplaints() {
       let filtered = this.complaints;
-      
       if (this.currentFilter !== 'all') {
         filtered = filtered.filter(complaint => complaint.status === this.currentFilter);
       }
-      
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter(complaint => 
-          complaint.studentName.toLowerCase().includes(query) || 
-          complaint.id.toLowerCase().includes(query) ||
+        filtered = filtered.filter(complaint =>
+          (complaint.submittedBy?.fullName?.toLowerCase?.() || complaint.submittedBy?.toLowerCase?.() || '').includes(query) ||
+          complaint._id.toLowerCase().includes(query) ||
           complaint.category.toLowerCase().includes(query) ||
           (complaint.assignedStaff && this.getStaffName(complaint.assignedStaff).toLowerCase().includes(query))
         );
       }
-      
       return filtered;
     },
     sortedAndFilteredComplaints() {
       return [...this.filteredComplaints].sort((a, b) => {
-        let modifier = 1;
-        if (this.sortDirection === 'desc') modifier = -1;
-        
-        if (this.sortColumn === 'date') {
-          const dateA = new Date(a.date);
-          const dateB = new Date(b.date);
-          return (dateA - dateB) * modifier;
-        }
-        
-        if (a[this.sortColumn] < b[this.sortColumn]) return -1 * modifier;
-        if (a[this.sortColumn] > b[this.sortColumn]) return 1 * modifier;
-        return 0;
+        let modifier = this.sortDirection === 'desc' ? -1 : 1;
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return (dateA - dateB) * modifier;
       });
     }
   },
   methods: {
+    async fetchComplaints() {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('/api/v1/complaints/all', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log(res.data.data)
+        this.complaints = res.data.data;
+      } catch (err) {
+        console.error('Failed to fetch complaints', err);
+      }
+    },
     setFilter(filter) {
       this.currentFilter = filter;
     },
     formatDate(dateString) {
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString('en-US', options);
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
     },
     formatStatus(status) {
       return status.replace('-', ' ');
@@ -323,34 +236,22 @@ export default {
       const staff = this.staffMembers.find(s => s.id === staffId);
       return staff ? `${staff.name} (${staff.expertise})` : 'Unknown';
     },
-    availableStaff(complaint) {
-      return this.staffMembers.filter(staff => 
-        staff.expertise.toLowerCase() === complaint.category.toLowerCase()
-      );
-    },
-    updateStatus(complaint) {
-      console.log(`Updating status for ${complaint.id} to ${complaint.status}`);
-      
-      if (complaint.status === 'resolved') {
-        complaint.assignedStaff = '';
-      }
-    },
-    updateAssignment(complaint) {
-      console.log(`Assigned staff ${complaint.assignedStaff} to complaint ${complaint.id}`);
-      
-      if (complaint.assignedStaff && complaint.status === 'pending') {
-        complaint.status = 'in-progress';
-      }
-    },
     showDetails(complaint) {
       this.selectedComplaint = complaint;
     },
     closeModal() {
       this.selectedComplaint = null;
     },
-    },
+    handleSearch() {
+      // reactive with v-model
+    }
+  },
+  mounted() {
+    this.fetchComplaints();
   }
+};
 </script>
+
 
 <style scoped>
 .complaint-management-container {

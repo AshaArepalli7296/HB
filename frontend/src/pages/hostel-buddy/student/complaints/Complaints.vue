@@ -3,7 +3,6 @@
   <div class="request-container1">
     <div class="request-container">
       <div class="cards-wrapper">
-
         <!-- Complaint Form -->
         <div class="form-card">
           <h1 class="center-heading">Complaint Submission</h1>
@@ -37,50 +36,38 @@
             </div>
 
             <div class="submit-wrapper">
-              <button @click="submitComplaint" class="submit-btn">
-                Submit Complaint
-              </button>
+              <button @click="submitComplaint" class="submit-btn">Submit Complaint</button>
             </div>
           </div>
         </div>
 
         <!-- Status Tracker -->
-        <div class="status-card">
-          <h2>Request Status</h2>
-          <div class="status-timeline">
-            <div class="status-step" :class="{ active: statusStep >= 1 }">
-              <div class="step-number">1</div>
-              <div class="step-content">
-                <h3>Pending</h3>
-                <p>Complaint submitted for review</p>
-              </div>
-            </div>
+      
+      </div>
 
-            <div class="status-step" :class="{ active: statusStep >= 2 }">
-              <div class="step-number">2</div>
-              <div class="step-content">
-                <h3>In Progress</h3>
-                <p>Maintenance team working on it</p>
-              </div>
-            </div>
-
-            <div class="status-step" :class="{ active: statusStep >= 3 }">
-              <div class="step-number">3</div>
-              <div class="step-content">
-                <h3>Resolved</h3>
-                <p>Issue has been resolved</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="current-status" v-if="currentComplaint">
-            <h3>Current Complaint:</h3>
-            <p><strong>Type:</strong> {{ currentComplaint.type }}</p>
-            <p><strong>Submitted:</strong> {{ formatDate(currentComplaint.date) }}</p>
-            <p><strong>Status:</strong> {{ currentComplaint.status }}</p>
-          </div>
-        </div>
-
+      <!-- Complaint History List -->
+      <div class="complaint-history" v-if="complaints.length > 0">
+        <h2>All Complaints</h2>
+        <table class="complaint-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(c, index) in complaints" :key="c._id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ c.category }}</td>
+              <td>{{ c.description }}</td>
+              <td>{{ c.status }}</td>
+              <td>{{ formatDate(c.createdAt) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -102,7 +89,7 @@ export default {
       uploadedPhoto: null,
       statusStep: 1,
       currentComplaint: null,
-      complaints: [] // to avoid error if unshift is used
+      complaints: []
     };
   },
   methods: {
@@ -112,8 +99,37 @@ export default {
     formatDate(dateStr) {
       return new Date(dateStr).toLocaleString('en-IN');
     },
+    async fetchStudentComplaints() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await axios.get('/api/v1/complaints/my', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    this.complaints = res.data.data;
+
+    if (this.complaints.length > 0) {
+      this.currentComplaint = this.complaints[0];
+
+      switch (this.currentComplaint.status) {
+        case 'In Progress':
+          this.statusStep = 2;
+          break;
+        case 'Resolved':
+          this.statusStep = 3;
+          break;
+        default:
+          this.statusStep = 1;
+      }
+    }
+  } catch (err) {
+    console.error('❌ Error fetching student complaints:', err);
+  }
+},
     async submitComplaint() {
-      const token = JSON.parse(localStorage.getItem('user'))?.token;
+      const token = localStorage.getItem('token');
 
       if (!this.complaintType || !this.complaintDescription) {
         alert('Please fill in all fields.');
@@ -126,31 +142,22 @@ export default {
         formData.append('description', this.complaintDescription);
 
         if (this.uploadedPhoto) {
-          formData.append('photo', this.uploadedPhoto);
+          formData.append('image', this.uploadedPhoto);
         }
 
-        const res = await axios.post(
-          'http://localhost:5000/api/v1/students/complaints',
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'multipart/form-data',
-            },
+        await axios.post('/api/v1/complaints', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
           }
-        );
-
-        const complaintData = res.data.data;
+        });
 
         alert('Complaint submitted successfully!');
         this.resetComplaintForm();
-
-        this.complaints.unshift(complaintData);
-        this.currentComplaint = complaintData;
-        this.statusStep = 1; // reset or set accordingly
+        this.fetchStudentComplaints(); // Refresh list
       } catch (err) {
         console.error('Complaint submission error:', err);
-        alert(err.response?.data?.message || 'Failed to submit complaint. Please try again.');
+        alert(err.response?.data?.message || 'Failed to submit complaint.');
       }
     },
     resetComplaintForm() {
@@ -158,9 +165,13 @@ export default {
       this.complaintDescription = '';
       this.uploadedPhoto = null;
     }
+  },
+  mounted() {
+    this.fetchStudentComplaints();
   }
 };
 </script>
+
 
 
 <style scoped>
@@ -198,10 +209,6 @@ export default {
  
 }
 
-.status-card {
-  width: 400px;
-}
-
 .form-group {
   margin-bottom: 20px;
 }
@@ -233,51 +240,6 @@ textarea.form-input {
   resize: vertical;
 }
 
-.status-timeline {
-  position: relative;
-  padding-left: 30px;
-  margin-top: 20px;
-}
-
-.status-timeline::before {
-  content: '';
-  position: absolute;
-  left: 15px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #ddd;
-}
-
-.status-step {
-  position: relative;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-}
-
-.status-step:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.step-number {
-  position: absolute;
-  left: -30px;
-  top: 0;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #ddd;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-.status-step.active .step-number {
-  background: #1BBC9B;
-}
 .request-container1 {
   height: 100vh;
   display: flex;
@@ -366,4 +328,35 @@ padding: 3rem 2rem;
     padding: 20px;
   }
 }
+.complaint-history {
+  margin-top: 40px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.history-heading {
+  font-size: 22px;
+  color: #1BBC9B;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.history-card {
+  padding: 15px;
+  margin-bottom: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  border-left: 5px solid #1BBC9B;
+}
+
+.complaint-image {
+  margin-top: 10px;
+  max-width: 100px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
 </style>
