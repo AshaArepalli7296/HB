@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="dashboard-header">
       <div class="header-left">
-        <h1>Welcome, {{ studentName }}</h1>
+       <h1>Welcome, {{ studentName }}</h1>
       </div>
       <div class="header-right">
         <div class="profile-dropdown">
@@ -75,6 +75,10 @@
             <i class="fas fa-bullhorn"></i>
             <span>Announcements</span>
           </div>
+          <div class="mobile-menu-item" @click="navigateTo('/rules')">
+            <i class="fas fa-edit"></i>
+            <span>Rules and Regulations</span>
+          </div>
         </div>
       </div>
     </div>
@@ -105,33 +109,23 @@
         </div>
         <div class="metric-card">
           <div class="metric-content">
-            <h3>Todays Meal</h3>
+            <h3>Meals This Week</h3>
             <p class="metric-value">21/21</p>
             <p class="metric-change">
-              <i class="fas fa-utensils"></i> Meals taken: 3
+              <i class="fas fa-utensils"></i> 100% attendance
             </p>
           </div>
           <div class="metric-icon"><i class="fas fa-utensils"></i></div>
         </div>
         <div class="metric-card">
           <div class="metric-content">
-            <h3>Leave Status</h3>
+            <h3>Pending Leaves</h3>
             <p class="metric-value">2</p>
             <p class="metric-change">
-              <i class="fas fa-calendar-alt"></i> 1 approved, 1 pending
+              <i class="fas fa-clock"></i> 1 approved, 1 pending
             </p>
           </div>
           <div class="metric-icon"><i class="fas fa-calendar-alt"></i></div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-content">
-            <h3>Complaint Status</h3>
-            <p class="metric-value">2</p>
-            <p class="metric-change">
-              <i class="fas fa-clipboard-list"></i> 1 approved, 1 pending
-            </p>
-          </div>
-          <div class="metric-icon"><i class="fas fa-clipboard-list"></i></div>
         </div>
       </div>
 
@@ -256,11 +250,17 @@ export default {
     return {
       showDropdown: false,
       showMobileMenu: false,
-      announcements: [],
-      loadingNotices: true,
       studentName: '',
       showProfileDropdown: false,
+      announcements: [],
+      loadingNotices: true,
     };
+  },
+  computed: {
+    // ✅ Only show latest 3 announcements
+    recentAnnouncements() {
+      return this.announcements.slice(0, 3);
+    }
   },
   mounted() {
     const userData = localStorage.getItem('userProfile');
@@ -274,12 +274,7 @@ export default {
     }
     this.fetchAnnouncements();
   },
-  computed: {
-    // ✅ Only show latest 3 announcements
-    recentAnnouncements() {
-      return this.announcements.slice(0, 3);
-    }
-  },
+
   methods: {
     toggleProfileDropdown() {
       this.showDropdown = !this.showDropdown;
@@ -291,12 +286,13 @@ export default {
     },
     logout() {
       this.showDropdown = false;
-      this.$router.push("/login");
+      this.$router.push("/hostel-buddy");
     },
     navigateTo(route) {
       this.$router.push(route);
       this.showMobileMenu = false;
     },
+
     async fetchAnnouncements() {
       try {
         const res = await axios.get("/api/announcements");
@@ -308,6 +304,7 @@ export default {
         this.loadingNotices = false;
       }
     },
+
     formatTime(dateStr) {
       if (!dateStr) return "";
       const date = new Date(dateStr);

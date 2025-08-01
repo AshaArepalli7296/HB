@@ -130,7 +130,7 @@ export default {
         }
 
         const res = await axios.post(
-          '/api/v1/students/complaints',
+          'http://localhost:5000/api/v1/students/complaints',
           formData,
           {
             headers: {
