@@ -51,10 +51,10 @@
             <i class="fas fa-tools"></i>
             <span>Raise Issue</span>
           </div>
-          <div class="mobile-menu-item" @click="navigateTo('/cancel-meal')">
+          <!-- <div class="mobile-menu-item" @click="navigateTo('/cancel-meal')">
             <i class="fas fa-book"></i>
             <span>Cancel Meal</span>
-          </div>
+          </div> -->
           <div class="mobile-menu-item" @click="navigateTo('/apply-leave')">
             <i class="fas fa-calendar-minus"></i>
             <span>Apply Leave</span>
@@ -63,10 +63,10 @@
             <i class="fas fa-utensils"></i>
             <span>Check Menu</span>
           </div>
-          <div class="mobile-menu-item" @click="navigateTo('/feedback')">
+          <!-- <div class="mobile-menu-item" @click="navigateTo('/feedback')">
             <i class="fas fa-comment-alt"></i>
             <span>Meal Feedback</span>
-          </div>
+          </div> -->
           <div class="mobile-menu-item" @click="navigateTo('/fee-details')">
             <i class="fas fa-money-bill-wave"></i>
             <span>Fee Details</span>
@@ -199,11 +199,11 @@
             <h3>Raise Issue</h3>
             <p>Report maintenance issues</p>
           </div>
-          <div class="quick-access-card" @click="navigateTo('/cancel-meal')">
+          <!-- <div class="quick-access-card" @click="navigateTo('/cancel-meal')">
             <i class="fas fa-book"></i>
             <h3>Cancel Meal</h3>
             <p>Request to cancel meal</p>
-          </div>
+          </div> -->
           <div class="quick-access-card" @click="navigateTo('/apply-leave')">
             <i class="fas fa-calendar-minus"></i>
             <h3>Apply Leave</h3>
@@ -214,11 +214,11 @@
             <h3>Check Menu</h3>
             <p>View weekly mess menu</p>
           </div>
-          <div class="quick-access-card" @click="navigateTo('/feedback')">
+          <!-- <div class="quick-access-card" @click="navigateTo('/feedback')">
             <i class="fas fa-comment-alt"></i>
             <h3>Meal Feedback</h3>
             <p>Provide feedback on meals</p>
-          </div>
+          </div> -->
           <!-- ✅ Announcements Card -->
           <div class="quick-access-card" @click="navigateTo('/announcements')">
             <i class="fas fa-bullhorn"></i>
@@ -229,6 +229,11 @@
             <i class="fas fa-money-bill-wave"></i>
             <h3>Fee Details</h3>
             <p>View all hostel fee details</p>
+          </div>
+           <div class="quick-access-card" @click="navigateTo('/rules')">
+            <i class="fas fa-edit"></i>
+            <h3>Rules and Regulations</h3>
+            <p>View hostel rules and policies</p>
           </div>
         </div>
       </div>

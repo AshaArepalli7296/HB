@@ -45,30 +45,26 @@
       
       </div>
 
-      <!-- Complaint History List -->
-      <div class="complaint-history" v-if="complaints.length > 0">
-        <h2>All Complaints</h2>
-        <table class="complaint-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(c, index) in complaints" :key="c._id">
-              <td>{{ index + 1 }}</td>
-              <td>{{ c.category }}</td>
-              <td>{{ c.description }}</td>
-              <td>{{ c.status }}</td>
-              <td>{{ formatDate(c.createdAt) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+     <!-- Complaint History List -->
+<div class="complaint-history" v-if="complaints.length > 0">
+  <h2>All Complaints</h2>
+
+  <div class="complaint-card" v-for="(c, index) in complaints" :key="c._id">
+        <div class="complaint-row">
+      <strong>Category:</strong> <span>{{ c.category }}</span>
+    </div>
+    <div class="complaint-row">
+      <strong>Description:</strong> <span>{{ c.description }}</span>
+    </div>
+    <div class="complaint-row">
+      <strong>Status:</strong> <span>{{ c.status }}</span>
+    </div>
+    <div class="complaint-row">
+      <strong>Date:</strong> <span>{{ formatDate(c.createdAt) }}</span>
+    </div>
+  </div>
+</div>
+
     </div>
   </div>
   <Footer />
@@ -100,34 +96,34 @@ export default {
       return new Date(dateStr).toLocaleString('en-IN');
     },
     async fetchStudentComplaints() {
-  try {
-    const token = localStorage.getItem('token');
-    const res = await axios.get('/api/v1/complaints/my', {
-      headers: {
-        Authorization: `Bearer ${token}`
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('/api/v1/complaints/my', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        this.complaints = res.data.data;
+
+        if (this.complaints.length > 0) {
+          this.currentComplaint = this.complaints[0];
+
+          switch (this.currentComplaint.status) {
+            case 'In Progress':
+              this.statusStep = 2;
+              break;
+            case 'Resolved':
+              this.statusStep = 3;
+              break;
+            default:
+              this.statusStep = 1;
+          }
+        }
+      } catch (err) {
+        console.error('❌ Error fetching student complaints:', err);
       }
-    });
-
-    this.complaints = res.data.data;
-
-    if (this.complaints.length > 0) {
-      this.currentComplaint = this.complaints[0];
-
-      switch (this.currentComplaint.status) {
-        case 'In Progress':
-          this.statusStep = 2;
-          break;
-        case 'Resolved':
-          this.statusStep = 3;
-          break;
-        default:
-          this.statusStep = 1;
-      }
-    }
-  } catch (err) {
-    console.error('❌ Error fetching student complaints:', err);
-  }
-},
+    },
     async submitComplaint() {
       const token = localStorage.getItem('token');
 
@@ -173,13 +169,13 @@ export default {
 </script>
 
 
-
 <style scoped>
 .request-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 30px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-y: auto;
 }
 
 .center-heading {
@@ -245,6 +241,7 @@ textarea.form-input {
   display: flex;
   justify-content: center;
   align-items: center;
+  
 
 padding: 3rem 2rem;
   background: linear-gradient(to bottom, 
@@ -253,7 +250,7 @@ padding: 3rem 2rem;
     #ffffff 50%, 
     #f0fdfc 70%, 
     #e0f8f6 100%);
- position: relative;
+ /* position: relative; */
   overflow: hidden;}
 
 .step-content {
@@ -357,6 +354,50 @@ padding: 3rem 2rem;
   max-width: 100px;
   border-radius: 6px;
   border: 1px solid #ddd;
+}
+
+.complaint-history {
+  margin-top: 40px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+.complaint-history h2 {
+  font-size: 26px;
+  color: #1BBC9B;
+  margin-bottom: 24px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.complaint-card {
+  background: #f9f9f9;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border-left: 5px solid #1BBC9B;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.complaint-card:hover {
+  transform: translateY(-2px);
+  background: #f0fdfc;
+}
+
+.complaint-row {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #555;
+}
+
+.complaint-row strong {
+  width: 120px;
+  font-weight: 600;
+  color: #333;
 }
 
 </style>
