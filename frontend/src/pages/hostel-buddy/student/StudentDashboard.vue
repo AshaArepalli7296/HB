@@ -35,6 +35,10 @@
           </button>
         </div>
         <div class="mobile-menu-items">
+           <div class="mobile-menu-item" @click="navigateTo('/announcements')">
+            <i class="fas fa-bullhorn"></i>
+            <span>Announcements</span>
+          </div>
           <div class="mobile-menu-item" @click="navigateTo('/payments')">
             <i class="fas fa-rupee-sign"></i>
             <span>Pay Fee</span>
@@ -71,10 +75,7 @@
             <i class="fas fa-money-bill-wave"></i>
             <span>Fee Details</span>
           </div>
-          <div class="mobile-menu-item" @click="navigateTo('/announcements')">
-            <i class="fas fa-bullhorn"></i>
-            <span>Announcements</span>
-          </div>
+         
           <div class="mobile-menu-item" @click="navigateTo('/rules')">
             <i class="fas fa-edit"></i>
             <span>Rules and Regulations</span>
@@ -179,6 +180,12 @@
       <div class="dashboard-section">
         <h2>Quick Actions</h2>
         <div class="quick-access-grid">
+            <!-- ✅ Announcements Card -->
+          <div class="quick-access-card" @click="navigateTo('/announcements')">
+            <i class="fas fa-bullhorn"></i>
+            <h3>Announcements</h3>
+            <p>View all hostel announcements</p>
+          </div>
           <div class="quick-access-card" @click="navigateTo('/payments')">
             <i class="fas fa-rupee-sign"></i>
             <h3>Pay Fee</h3>
@@ -219,12 +226,7 @@
             <h3>Meal Feedback</h3>
             <p>Provide feedback on meals</p>
           </div> -->
-          <!-- ✅ Announcements Card -->
-          <div class="quick-access-card" @click="navigateTo('/announcements')">
-            <i class="fas fa-bullhorn"></i>
-            <h3>Announcements</h3>
-            <p>View all hostel announcements</p>
-          </div>
+        
           <div class="quick-access-card" @click="navigateTo('/fee-details')">
             <i class="fas fa-money-bill-wave"></i>
             <h3>Fee Details</h3>

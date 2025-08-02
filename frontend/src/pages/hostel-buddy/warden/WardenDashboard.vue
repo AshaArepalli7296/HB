@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="warden-dashboard">
     <!-- Fixed Header -->
     <header class="dashboard-header">
@@ -41,10 +41,30 @@
             <i class="fas fa-bullhorn"></i>
             <span>Announcements</span>
           </div>
+         <div class="mobile-menu-item" @click="navigateTo('/room-assignment')">
+            <i class="fas fa-home"></i>
+            <span>Room Allocation</span>
+          </div>
           <div class="mobile-menu-item" @click="navigateTo('/room-change')">
             <i class="fas fa-exchange-alt"></i>
             <span>Change Rooms</span>
           </div>
+           <div class="mobile-menu-item" @click="navigateTo('/hostel-occupancy')">
+            <i class="fas fa-bed"></i>
+            <span>Hostel Occupancy</span>
+          </div>
+
+          <div class="mobile-menu-item" @click="navigateTo('/leave-approval')">
+            <i class="fas fa-calendar-check"></i>
+            <span>Leave Approval</span>
+          </div> 
+          <div class="mobile-menu-item" @click="navigateTo('/complaint-management')">
+            <i class="fas fa-tools"></i>
+            <span>View Complaints</span>
+          </div>
+          
+          
+
           <div class="mobile-menu-item" @click="navigateTo('/menu-update')">
             <i class="fas fa-utensils"></i>
             <span>Update Menu</span>
@@ -53,30 +73,18 @@
             <i class="fas fa-rupee-sign"></i>
             <span>Fee Management</span>
           </div>
-          <div class="mobile-menu-item" @click="navigateTo('/complaint-management')">
-            <i class="fas fa-tools"></i>
-            <span>View Complaints</span>
-          </div>
-          <div class="mobile-menu-item" @click="navigateTo('/payment-tracking')">
+          
+          <!-- <div class="mobile-menu-item" @click="navigateTo('/payment-tracking')">
             <i class="fas fa-file-invoice"></i>
             <span>Fee Reports</span>
-          </div>
-          <div class="mobile-menu-item" @click="navigateTo('/hostel-occupancy')">
-            <i class="fas fa-bed"></i>
-            <span>Hostel Occupancy</span>
-          </div>
-          <div class="mobile-menu-item" @click="navigateTo('/room-assignment')">
-            <i class="fas fa-home"></i>
-            <span>Room Allocation</span>
-          </div>
-          <div class="mobile-menu-item" @click="navigateTo('/student-management')">
+          </div> -->
+         
+           
+          <!-- <div class="mobile-menu-item" @click="navigateTo('/student-management')">
             <i class="fas fa-user-graduate"></i>
             <span>Student Details</span>
-          </div>
-          <div class="mobile-menu-item" @click="navigateTo('/leave-approval')">
-            <i class="fas fa-calendar-check"></i>
-            <span>Leave Approval</span>
-          </div>
+          </div> -->
+         
           <div class="mobile-menu-item" @click="navigateTo('/rules')">
             <i class="fas fa-clipboard-list"></i>
             <span>Edit Rules</span>
@@ -168,13 +176,11 @@ export default {
           icon: 'fas fa-bed',
           metricIcon: 'fas fa-home'
         },
-        {
-          title: 'Pending Complaints',
-          value: 8,
-          change: '1.5 avg. days',
-          icon: 'fas fa-clock',
-          metricIcon: 'fas fa-clipboard-list'
-        },
+         {
+    title: 'Pending Complaints',
+    value: 0, // will be updated via API
+    metricIcon: 'fas fa-clipboard-list'
+  },
         {
           title: 'Fee Defaulters',
           value: 14,
@@ -224,6 +230,20 @@ export default {
           route: '/room-assignment',
           bgColor: '#e8f5e9'
         },
+         {
+          title: 'Change Rooms',
+          icon: 'fas fa-exchange-alt',
+          description: 'Process room change requests',
+          route: '/room-change',
+          bgColor: '#e0f2f1'
+        },
+         {
+          title: 'Hostel Occupancy',
+          icon: 'fas fa-bed',
+          description: 'View current hostel occupancy',
+          route: '/hostel-occupancy',
+          bgColor: '#fce4ec'
+        },
         {
           title: 'Leave Approval',
           icon: 'fas fa-calendar-check',
@@ -238,6 +258,13 @@ export default {
           route: '/complaint-management',
           bgColor: '#f3e5f5'
         },
+         {
+          title: 'Update Menu',
+          icon: 'fas fa-utensils',
+          description: 'Update hostel food menu',
+          route: '/menu-update',
+          bgColor: '#fff8e1'
+        },
         {
           title: 'Fee Management',
           icon: 'fas fa-rupee-sign',
@@ -245,41 +272,23 @@ export default {
           route: '/fee-management',
           bgColor: '#e0f7fa'
         },
-        {
-          title: 'Student Details',
-          icon: 'fas fa-user-graduate',
-          description: 'View and manage student records',
-          route: '/student-management',
-          bgColor: '#f1f8e9'
-        },
-        {
-          title: 'Hostel Occupancy',
-          icon: 'fas fa-bed',
-          description: 'View current hostel occupancy',
-          route: '/hostel-occupancy',
-          bgColor: '#fce4ec'
-        },
-        {
-          title: 'Fee Reports',
-          icon: 'fas fa-file-invoice',
-          description: 'Generate fee payment reports',
-          route: '/payment-tracking',
-          bgColor: '#e8eaf6'
-        },
-        {
-          title: 'Change Rooms',
-          icon: 'fas fa-exchange-alt',
-          description: 'Process room change requests',
-          route: '/room-change',
-          bgColor: '#e0f2f1'
-        },
-        {
-          title: 'Update Menu',
-          icon: 'fas fa-utensils',
-          description: 'Update hostel food menu',
-          route: '/menu-update',
-          bgColor: '#fff8e1'
-        },
+        // {
+        //   title: 'Student Details',
+        //   icon: 'fas fa-user-graduate',
+        //   description: 'View and manage student records',
+        //   route: '/student-management',
+        //   bgColor: '#f1f8e9'
+        // },
+       
+        // {
+        //   title: 'Fee Reports',
+        //   icon: 'fas fa-file-invoice',
+        //   description: 'Generate fee payment reports',
+        //   route: '/payment-tracking',
+        //   bgColor: '#e8eaf6'
+        // },
+       
+       
         {
           title: 'Edit Rules',
           icon: 'fas fa-clipboard-list',
@@ -299,7 +308,19 @@ export default {
       } catch (error) {
         console.error("Invalid user data in localStorage");
       }
-    }
+    };
+    // Fetch pending complaints count
+  fetch('http://localhost:5000/api/v1/complaints/pending-count')
+    .then(response => response.json())
+    .then(data => {
+      const pendingCard = this.metricList.find(metric => metric.title === 'Pending Complaints');
+      if (pendingCard) {
+        pendingCard.value = data.pendingCount;
+      }
+    })
+    .catch(err => {
+      console.error('Failed to fetch pending complaints count', err);
+    });
   },
   methods: {
     toggleProfileDropdown() {

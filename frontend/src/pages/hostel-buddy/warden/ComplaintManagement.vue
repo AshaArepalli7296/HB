@@ -261,6 +261,11 @@ export default {
     showDetails(complaint) {
       this.selectedComplaint = complaint;
     },
+    openModal(complaint) {
+  this.selectedComplaint = complaint;
+  this.selectedStatus = complaint.status || 'pending';
+}
+,
     closeModal() {
       this.selectedComplaint = null;
       this.selectedStatus = '';

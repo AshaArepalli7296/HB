@@ -6,13 +6,13 @@
     <div class="cards-wrapper">
       <!-- Left Card - Request Form -->
       <div class="form-card">
-        <div class="current-room">
+        <!-- <div class="current-room">
           <h3>Your Current Room</h3>
           <div class="room-info">
             <span><strong>Room :</strong> {{ currentRoom.room }}</span>
             <span><strong>Block :</strong> {{ currentRoom.block }}</span>
           </div>
-        </div>
+        </div> -->
 
         <form @submit.prevent="submitRequest" class="request-form">
           <div class="form-group">

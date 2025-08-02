@@ -1,4 +1,4 @@
-import Complaint from '../models/Complaint.model.js';
+  import Complaint from '../models/Complaint.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/appError.js';
 import { cloudinary } from '../config/cloudinary.js'; // ✅ Correct path
@@ -106,4 +106,10 @@ export const updateComplaintStatusSimple = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
+};
+
+export const getPendingComplaintCount = async (req, res) => {
+  const count = await Complaint.countDocuments({ status: 'pending' });
+  console.log('💡 Pending complaints:', count);
+  res.status(200).json({ pendingCount: count });
 };

@@ -1,10 +1,11 @@
-import express from 'express';
+ import express from 'express';
 import Complaint from '../models/Complaint.model.js';
 import upload from '../middleware/uploadImage.js';
 import verifyToken from '../middleware/verifyToken.js'; // ✅ Token validation
 import {
   getMyComplaints,
   updateComplaintStatus, // or updateComplaintStatusSimple
+    getPendingComplaintCount,
 } from '../controllers/complaint.controller.js';
 import { getAllComplaints } from '../controllers/warden.controller.js';
 
@@ -36,6 +37,8 @@ router.get('/all', verifyToken, getAllComplaints);
 
 // ✅ Add this to enable status updates (full or simple)
 router.put('/:id/status', verifyToken, updateComplaintStatus); 
+router.get('/pending-count', getPendingComplaintCount);
+
 // or
 // router.put('/:id/simple-status', verifyToken, updateComplaintStatusSimple);
 

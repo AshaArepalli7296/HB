@@ -1,6 +1,6 @@
 <template>
   <div class="announcements-page">
-    <Navbar_warden />
+    <Navbar_Student />
     <main>
       <section class="announcements-header">
         <div class="header-top">
@@ -83,12 +83,12 @@
 <script>
 import axios from "axios";
 import Footer from '@/components/Footer.vue'
-import Navbar_warden from '../../../components/Navbar_warden.vue'
+import Navbar_Student from "../../../components/Navbar_Student.vue";
 
 export default {
   name: 'Announcements',
   components: {
-    Navbar_warden,
+    Navbar_Student,
     Footer
   },
   data() {

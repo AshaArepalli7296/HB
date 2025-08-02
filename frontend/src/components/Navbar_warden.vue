@@ -47,9 +47,35 @@
     </router-link>
     </li>
 
+     <li>
+    <router-link to="room-assignment"  @click="closeMenu">
+   <font-awesome-icon :icon="['fas',  'home']" /> Room Allocation
+    </router-link>
+    </li>
+
     <li>
     <router-link to="room-change"  @click="closeMenu">
     <font-awesome-icon :icon="['fas', 'exchange-alt']" /> Change Rooms
+    </router-link>
+    </li>
+
+    <li>
+    <router-link to="hostel-occupancy"  @click="closeMenu">
+    <font-awesome-icon :icon="['fas', 'bed']" /> Hostel Occupancy
+    </router-link>
+    </li>
+
+
+     <li>
+    <router-link to="leave-approval"  @click="closeMenu">
+    <font-awesome-icon :icon="['fas', 'clipboard-check']" /> Leave Approval
+    </router-link>
+    </li>
+
+
+    <li>
+    <router-link to="complaint-management"  @click="closeMenu">
+    <font-awesome-icon :icon="['fas','screwdriver-wrench']" /> View Complaints
     </router-link>
     </li>
 
@@ -65,41 +91,24 @@
     </router-link>
     </li>
 
-    <li>
-    <router-link to="complaint-management"  @click="closeMenu">
-    <font-awesome-icon :icon="['fas','screwdriver-wrench']" /> View Complaints
-    </router-link>
-    </li>
+    
 
-    <li>
+    <!-- <li>
     <router-link to="payment-tracking"  @click="closeMenu">
    <font-awesome-icon :icon="['fas', 'file-alt']" /> Fee Reports
     </router-link>
-    </li>
+    </li> -->
 
-    <li>
-    <router-link to="hostel-occupancy"  @click="closeMenu">
-    <font-awesome-icon :icon="['fas', 'bed']" /> Hostel Occupancy
-    </router-link>
-    </li>
+    
+   
 
-    <li>
-    <router-link to="room-assignment"  @click="closeMenu">
-   <font-awesome-icon :icon="['fas',  'home']" /> Room Allocation
-    </router-link>
-    </li>
-
-    <li>
+    <!-- <li>
     <router-link to="student-management"  @click="closeMenu">
     <font-awesome-icon :icon="['fas', 'user-graduate']" /> Student Details
     </router-link>
-    </li>
+    </li> -->
 
-    <li>
-    <router-link to="leave-approval"  @click="closeMenu">
-    <font-awesome-icon :icon="['fas', 'clipboard-check']" /> Leave Approval
-    </router-link>
-    </li>
+   
   </ul>
 </div>
 
