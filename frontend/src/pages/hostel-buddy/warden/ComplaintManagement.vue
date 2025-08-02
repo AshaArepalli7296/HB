@@ -17,17 +17,22 @@
         <button @click="setFilter('in-progress')" :class="{ active: currentFilter === 'in-progress' }">
           In Progress ({{ inProgressCount }})
         </button>
-        <button @click="setFilter('resolved')" :class="{ active: currentFilter === 'resolved' }">
-          Resolved ({{ resolvedCount }})
+        <button @click="setFilter('staff-assigned')" :class="{ active: currentFilter === 'staff-assigned' }">
+           Staff Assigned ({{ resolvedCount }})
+        </button>
+          <button @click="setFilter('rejected')" :class="{ active: currentFilter === 'rejected' }">
+           Rejected ({{ resolvedCount }})
         </button>
       </div>
 
       <div class="search-box">
         <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search complaints..."
-          @input="handleSearch" />
+  v-model="searchQuery"
+  type="text"
+  placeholder="Search complaints..."
+  class="search-input"
+/>
+
       </div>
     </div>
 
@@ -74,7 +79,8 @@
         </div>
 
         <div class="card-footer">
-          <button @click="showDetails(complaint)" class="details-btn">View Details</button>
+          <button @click="showDetails(complaint)" class="details-btn">Update Status</button>
+          
         </div>
       </div>
 
@@ -112,11 +118,15 @@
             <span>{{ formatDate(selectedComplaint.date) }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Status:</span>
-            <span :class="['status', selectedComplaint.status]">
-              {{ formatStatus(selectedComplaint.status) }}
-            </span>
-          </div>
+  <label class="detail-label">Update Status:</label>
+  <select v-model="selectedStatus">
+    <option value="pending">Pending</option>
+    <option value="in-progress">In Progress</option>
+    <option value="staff-assigned">Staff Assigned</option>
+    <option value="rejected">Rejected</option>
+  </select>
+</div>
+
           <div class="detail-row">
             <span class="detail-label">Assigned Staff:</span>
             <span v-if="selectedComplaint.assignedStaff">
@@ -134,7 +144,10 @@
           </div>
         </div>
         <div class="modal-footer">
+          <button @click="updateComplaintStatus" class="modal-btn">Update</button>
           <button @click="closeModal" class="modal-btn">Close</button>
+          
+
         </div>
       </div>
     </div>
@@ -159,6 +172,7 @@ export default {
       sortColumn: 'date',
       sortDirection: 'desc',
       selectedComplaint: null,
+      selectedStatus: '',
       complaints: [],
       staffMembers: [
         { id: 'ST001', name: 'Rajesh Kumar', expertise: 'Electrical' },
@@ -177,7 +191,7 @@ export default {
       return this.complaints.filter(c => c.status === 'in-progress').length;
     },
     resolvedCount() {
-      return this.complaints.filter(c => c.status === 'resolved').length;
+      return this.complaints.filter(c => c.status === 'staff-assigned').length;
     },
     filteredComplaints() {
       let filtered = this.complaints;
@@ -186,12 +200,14 @@ export default {
       }
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter(complaint =>
-          (complaint.submittedBy?.fullName?.toLowerCase?.() || complaint.submittedBy?.toLowerCase?.() || '').includes(query) ||
-          complaint._id.toLowerCase().includes(query) ||
-          complaint.category.toLowerCase().includes(query) ||
-          (complaint.assignedStaff && this.getStaffName(complaint.assignedStaff).toLowerCase().includes(query))
-        );
+       filtered = filtered.filter(complaint =>
+      (complaint.submittedBy?.fullName?.toLowerCase?.() || complaint.submittedBy?.toLowerCase?.() || '').includes(query) ||
+      (complaint._id?.toLowerCase?.() || '').includes(query) ||
+       (complaint.category?.toLowerCase?.() || '').includes(query) ||
+       (complaint.description?.toLowerCase?.() || '').includes(query) ||
+       (complaint.assignedStaff && this.getStaffName(complaint.assignedStaff).toLowerCase().includes(query))
+      );
+
       }
       return filtered;
     },
@@ -204,6 +220,13 @@ export default {
       });
     }
   },
+  watch: {
+    selectedComplaint(newVal) {
+      if (newVal) {
+        this.selectedStatus = newVal.status || '';
+      }
+    }
+  },
   methods: {
     async fetchComplaints() {
       try {
@@ -213,7 +236,6 @@ export default {
             Authorization: `Bearer ${token}`
           }
         });
-        console.log(res.data.data)
         this.complaints = res.data.data;
       } catch (err) {
         console.error('Failed to fetch complaints', err);
@@ -241,9 +263,37 @@ export default {
     },
     closeModal() {
       this.selectedComplaint = null;
+      this.selectedStatus = '';
+    },
+    async updateComplaintStatus() {
+      if (!this.selectedComplaint || !this.selectedStatus) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.put(`/api/v1/complaints/${this.selectedComplaint._id}/status`, 
+          { status: this.selectedStatus },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        // Update local state
+        this.selectedComplaint.status = this.selectedStatus;
+        const index = this.complaints.findIndex(c => c._id === this.selectedComplaint._id);
+        if (index !== -1) {
+          this.complaints[index].status = this.selectedStatus;
+        }
+
+        alert('Complaint status updated successfully!');
+      } catch (error) {
+        console.error('Error updating status:', error);
+        alert('Failed to update complaint status.');
+      }
     },
     handleSearch() {
-      // reactive with v-model
+      // handled by v-model + computed
     }
   },
   mounted() {
@@ -251,6 +301,7 @@ export default {
   }
 };
 </script>
+
 
 
 <style scoped>
@@ -375,7 +426,10 @@ export default {
   border-left-color: #1565c0;
 }
 
-.complaint-card.resolved {
+.complaint-card.staff-assigned {
+  border-left-color: #2e7d32;
+}
+.complaint-card.rejected {
   border-left-color: #2e7d32;
 }
 
@@ -411,11 +465,15 @@ export default {
   color: #1565c0;
 }
 
-.status-badge.resolved {
+.status-badge.staff-assigned {
   background-color: #e8f5e9;
   color: #2e7d32;
 }
 
+.status-badge.rejected {
+ background-color: #fff3e0;
+  color: #e65100;
+}
 .card-body {
   padding: 15px;
   flex-grow: 1;

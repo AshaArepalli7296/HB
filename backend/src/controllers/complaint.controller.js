@@ -1,7 +1,7 @@
 import Complaint from '../models/Complaint.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/appError.js';
-import { cloudinary } from '../config/cloudinary.js';// ✅ Correct path
+import { cloudinary } from '../config/cloudinary.js'; // ✅ Correct path
 
 export const createComplaint = asyncHandler(async (req, res, next) => {
   console.log('💡 Incoming Complaint Request Body:', req.body);
@@ -72,7 +72,6 @@ export const getAllComplaints = async (req, res, next) => {
   }
 };
 
-
 export const updateComplaintStatus = async (req, res, next) => {
   try {
     const { status, assignedTo } = req.body;
@@ -84,5 +83,27 @@ export const updateComplaintStatus = async (req, res, next) => {
     res.status(200).json({ status: 'success', data: complaint });
   } catch (err) {
     next(err);
+  }
+};
+
+// ✅ New additional export for status-only update
+export const updateComplaintStatusSimple = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const updatedComplaint = await Complaint.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedComplaint) {
+      return res.status(404).json({ message: 'Complaint not found' });
+    }
+
+    res.status(200).json({ message: 'Status updated', data: updatedComplaint });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
   }
 };

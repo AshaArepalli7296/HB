@@ -43,7 +43,7 @@
 
         <!-- Status Tracker -->
       
-      </div>
+    
 
      <!-- Complaint History List -->
 <div class="complaint-history" v-if="complaints.length > 0">
@@ -56,9 +56,10 @@
     <div class="complaint-row">
       <strong>Description:</strong> <span>{{ c.description }}</span>
     </div>
-    <div class="complaint-row">
-      <strong>Status:</strong> <span>{{ c.status }}</span>
-    </div>
+   <div class="complaint-row">
+  <strong>Status:</strong> <span>{{ formatStatus(c.status) }}</span>
+</div>
+
     <div class="complaint-row">
       <strong>Date:</strong> <span>{{ formatDate(c.createdAt) }}</span>
     </div>
@@ -67,6 +68,7 @@
 
     </div>
   </div>
+</div>
   <Footer />
 </template>
 
@@ -160,7 +162,15 @@ export default {
       this.complaintType = '';
       this.complaintDescription = '';
       this.uploadedPhoto = null;
-    }
+    },
+  formatStatus(status) {
+  return status
+    .trim()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
   },
   mounted() {
     this.fetchStudentComplaints();
@@ -171,9 +181,9 @@ export default {
 
 <style scoped>
 .request-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 30px;
+  width: 100%;
+  padding: 0 20px;
+  margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-y: auto;
 }
@@ -189,7 +199,8 @@ export default {
 
 .cards-wrapper {
   display: flex;
-  gap: 30px;
+  gap: 10px;
+  
 }
 
 .form-card {
@@ -237,22 +248,27 @@ textarea.form-input {
 }
 
 .request-container1 {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
-  
-
-padding: 3rem 2rem;
+  padding: 3rem 2rem;
   background: linear-gradient(to bottom, 
     #e0f8f6 0%, 
     #f0fdfc 30%, 
     #ffffff 50%, 
     #f0fdfc 70%, 
     #e0f8f6 100%);
- /* position: relative; */
-  overflow: hidden;}
+  overflow-y: auto;
+}
 
+.complaint-history {
+  flex: 1;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  
+ 
+}
 .step-content {
   padding-left: 20px;
 }
@@ -315,6 +331,12 @@ padding: 3rem 2rem;
     width: 100%;
   }
 }
+@media (max-width: 992px) {
+  .cards-wrapper {
+    flex-direction: column;
+  }
+}
+
 
 @media (max-width: 768px) {
   .request-container {
@@ -326,7 +348,7 @@ padding: 3rem 2rem;
   }
 }
 .complaint-history {
-  margin-top: 40px;
+  margin-top: 0px;
   background: #fff;
   padding: 25px;
   border-radius: 12px;
@@ -357,7 +379,7 @@ padding: 3rem 2rem;
 }
 
 .complaint-history {
-  margin-top: 40px;
+  margin-top: 0px;
   background: #ffffff;
   padding: 30px;
   border-radius: 16px;

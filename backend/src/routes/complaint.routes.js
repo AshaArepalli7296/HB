@@ -2,7 +2,10 @@ import express from 'express';
 import Complaint from '../models/Complaint.model.js';
 import upload from '../middleware/uploadImage.js';
 import verifyToken from '../middleware/verifyToken.js'; // ✅ Token validation
-import { getMyComplaints } from '../controllers/complaint.controller.js';
+import {
+  getMyComplaints,
+  updateComplaintStatus, // or updateComplaintStatusSimple
+} from '../controllers/complaint.controller.js';
 import { getAllComplaints } from '../controllers/warden.controller.js';
 
 const router = express.Router();
@@ -11,14 +14,13 @@ const router = express.Router();
 router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
     const { category, description } = req.body;
-
-    const imageUrl = req.file ? req.file.path : ''; // Cloudinary URL
+    const imageUrl = req.file ? req.file.path : '';
 
     const complaint = new Complaint({
       category,
       description,
       imageUrl,
-      submittedBy: req.user._id // ✅ Comes from token
+      submittedBy: req.user._id
     });
 
     const savedComplaint = await complaint.save();
@@ -28,7 +30,13 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
 router.get('/my', verifyToken, getMyComplaints);
-router.get('/all',verifyToken,getAllComplaints)
+router.get('/all', verifyToken, getAllComplaints);
+
+// ✅ Add this to enable status updates (full or simple)
+router.put('/:id/status', verifyToken, updateComplaintStatus); 
+// or
+// router.put('/:id/simple-status', verifyToken, updateComplaintStatusSimple);
 
 export default router;
