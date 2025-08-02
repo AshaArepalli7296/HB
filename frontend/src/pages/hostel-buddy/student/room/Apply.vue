@@ -202,11 +202,11 @@ export default {
         formData.append('aadhaar', this.form.aadhaar);
         formData.append('collegeId', this.form.collegeId);
 
-        await axios.post('/api/room-application', formData, {
+        await axios.post('http://localhost:5000/api/v1/room-application', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        });
+        });//
 
         alert('Application submitted successfully!');
         this.$router.push({ name: 'StudentDashboard' });

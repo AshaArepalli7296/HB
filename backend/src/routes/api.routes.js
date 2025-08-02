@@ -5,6 +5,10 @@ import wardenRouter from './warden.routes.js';
 import leaveRoutes from './leave.routes.js';
 import roomChangeRoutes from './roomChange.routes.js';
 import complaintRoutes from './complaint.routes.js';
+import roomRoutes from './roomRoutes.js';
+import roomAssignmentRoutes from './roomAssignment.routes.js';
+import roomApplicationRoutes from './roomApplicationRoutes.js';
+
 
 
 // import roomApplicationRoutes from './roomApplication.routes.js';
@@ -18,6 +22,10 @@ router.use('/api/v1/wardens', wardenRouter);
 router.use('/api/v1/leave', leaveRoutes);
 router.use('/api/v1', roomChangeRoutes);
 router.use('/api/v1/complaints', complaintRoutes); 
+router.use('/api/v1/rooms', roomRoutes);
+router.use('/api/v1/room-assignment', roomAssignmentRoutes);
+router.use('/api/v1/room-application', roomApplicationRoutes);
+
 
 // router.use('/api/v1/room-application', roomApplicationRoutes);
 

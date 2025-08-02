@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const roomApplicationSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
-  rollNumber: { type: String, required: true, unique: true },
+  rollNumber: { type: String, required: true},
   branchYear: { type: String, required: true },
   gender: { type: String, required: true },
   studentPhoto: { type: String }, // URL or base64
@@ -22,6 +22,7 @@ const roomApplicationSchema = new mongoose.Schema({
   joinDate: { type: Date }, // Filled by warden after approval
   assignedRoom: { type: String }, // Filled by warden
 }, { timestamps: true });
+
 
 const RoomApplication = mongoose.model('RoomApplication', roomApplicationSchema);
 export default RoomApplication;
