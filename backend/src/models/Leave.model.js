@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+ import mongoose from 'mongoose';
 
 const leaveSchema = new mongoose.Schema({
   student: {
@@ -44,7 +44,11 @@ roomNumber: {
   updatedAt: {
     type: Date,
     default: Date.now
-  }
+  },
+  wardenName: {
+  type: String,
+  default: ''
+}
 }, { timestamps: true });
 
  const Leave = mongoose.model('Leave', leaveSchema, 'leave');

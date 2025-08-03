@@ -1,121 +1,226 @@
 <template>
-  <Navbar_student/>
+  <Navbar_Student />
   <div class="room-application-container">
-    
-
-    <!-- Title -->
     <h1 class="application-title">Room Application</h1>
 
-    <!-- Form -->
-    <form @submit.prevent="submitApplication" class="application-form">
+    <form @submit.prevent="submitApplication" class="application-form" enctype="multipart/form-data">
       <!-- Row 1 -->
       <div class="form-row">
         <div class="form-group">
-          <label for="preferred-building">Preferred Building:</label>
-          <select id="preferred-building" v-model="form.preferredBuilding" required>
-            <option value="">Select Building</option>
-            <option value="A">Building A</option>
-            <option value="B">Building B</option>
-            <option value="C">Building C</option>
-          </select>
+          <label for="fullName">Full Name:</label>
+          <input type="text" id="fullName" v-model="form.fullName" required />
         </div>
 
         <div class="form-group">
-          <label for="room-type">Room Type:</label>
-          <select id="room-type" v-model="form.roomType" required>
-            <option value="">Select Room Type</option>
-            <option value="single">Single Occupancy</option>
-            <option value="double">Double Occupancy</option>
-            <option value="shared">Shared (4 person)</option>
-          </select>
+          <label for="rollNumber">Roll Number:</label>
+          <input type="text" id="rollNumber" v-model="form.rollNumber" required />
         </div>
       </div>
 
       <!-- Row 2 -->
       <div class="form-row">
         <div class="form-group">
-          <label for="preferred-mates">Preferred Roommates (if any):</label>
-          <input
-            type="text"
-            id="preferred-mates"
-            v-model="form.preferredMates"
-            placeholder="Enter student IDs separated by commas"
-          />
+          <label for="branchYear">Branch / Year:</label>
+          <input type="text" id="branchYear" v-model="form.branchYear" required />
         </div>
 
         <div class="form-group">
-          <label for="special-requirements">Special Requirements:</label>
-          <textarea
-            id="special-requirements"
-            v-model="form.specialRequirements"
-            placeholder="Any medical conditions or special needs"
-          ></textarea>
+          <label for="gender">Gender:</label>
+          <select id="gender" v-model="form.gender" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
       </div>
 
-      <!-- Checkbox -->
+      <!-- Row 3 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="studentPhoto">Student Photo:</label>
+          <input type="file" id="studentPhoto" @change="handleFileUpload('studentPhoto', $event)" accept="image/*" required />
+        </div>
+
+        <div class="form-group">
+          <label for="aadhaar">Aadhaar Card:</label>
+          <input type="file" id="aadhaar" @change="handleFileUpload('aadhaar', $event)" accept="application/pdf,image/*" required />
+        </div>
+      </div>
+
+      <!-- Row 4 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="collegeId">College ID:</label>
+          <input type="file" id="collegeId" @change="handleFileUpload('collegeId', $event)" accept="application/pdf,image/*" required />
+        </div>
+
+        <div class="form-group">
+          <label for="medicalInfo">Medical Info (optional):</label>
+          <textarea id="medicalInfo" v-model="form.medicalInfo" placeholder="Allergies, conditions, etc."></textarea>
+        </div>
+      </div>
+
+      <!-- Row 5 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="studentPhone">Student Phone:</label>
+          <input type="text" id="studentPhone" v-model="form.phone" required />
+        </div>
+
+        <div class="form-group">
+          <label for="parentPhone">Parent Phone:</label>
+          <input type="text" id="parentPhone" v-model="form.parentPhone" required />
+        </div>
+      </div>
+
+      <!-- Row 6 -->
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label for="address">Address:</label>
+          <textarea id="address" v-model="form.address" required></textarea>
+        </div>
+      </div>
+
+      <!-- Additional Room Preference -->
+      <div class="form-row">
+        <!-- <div class="form-group">
+          <label for="preferredBuilding">Preferred Building:</label>
+          <select id="preferredBuilding" v-model="form.preferredBuilding" required>
+            <option value="">Select Building</option>
+            <option value="A">Building A</option>
+            <option value="B">Building B</option>
+            <option value="C">Building C</option>
+          </select>
+        </div> -->
+
+        <div class="form-group">
+        <label for="sharing">Room Sharing Type</label>
+        <select id="sharing" v-model="form.sharingType" required>
+          <option value="">Select</option>
+          <option value="1">1 Sharing</option>
+          <option value="2">2 Sharing</option>
+          <option value="3">3 Sharing</option>
+          <option value="4">4 Sharing</option>
+          <option value="5">5 Sharing</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="ac">AC / Non-AC</label>
+        <select id="ac" v-model="form.acType" required>
+          <option value="">Select</option>
+          <option value="AC">AC</option>
+          <option value="Non-AC">Non-AC</option>
+        </select>
+      </div>
+
+        <!-- <div class="form-group">
+          <label for="specialRequirements">Special Requirements:</label>
+          <textarea id="specialRequirements" v-model="form.specialRequirements"></textarea>
+        </div> -->
+      </div>
+
+      <!-- Terms Agreement -->
       <div class="form-row">
         <div class="form-group full-width checkbox-wrapper">
           <label class="checkbox-label">
-            <input
-              type="checkbox"
-              id="terms-agreement"
-              v-model="form.termsAgreed"
-              required
-            />
+            <input type="checkbox" id="termsAgreed" v-model="form.termsAgreed" required />
             <span>I agree to the hostel rules and regulations</span>
           </label>
         </div>
       </div>
 
-      <!-- Submit Button -->
+      <!-- Submit & Back -->
       <div class="form-actions">
         <button type="submit" class="submit-btn">Submit Application</button>
       </div>
-      <!-- Back Navigation -->
-    <div class="back-nav">
-      <button @click="goBack" class="back-link">
-        ← Back to Dashboard
-      </button>
-    </div>
+      <div class="back-nav">
+        <button @click="goBack" class="back-link">
+          ← Back to Dashboard
+        </button>
+      </div>
     </form>
   </div>
-  <Footer/>
+  <Footer />
 </template>
 
 <script>
-import Navbar_student from '../../../../components/Navbar_student.vue';
-import Footer from '@/components/Footer.vue'
+import Navbar_Student from '../../../../components/Navbar_Student.vue';
+import Footer from '@/components/Footer.vue';
+import axios from 'axios';
 
 export default {
   name: 'RoomApplication',
-   components: {
-    Navbar_student,
-    Footer
-  },
+  components: { Navbar_Student, Footer },
   data() {
     return {
       form: {
-        preferredBuilding: '',
-        roomType: '',
-        preferredMates: '',
-        specialRequirements: '',
+        fullName: '',
+        rollNumber: '',
+        branchYear: '',
+        gender: '',
+        phone: '',
+        parentPhone: '',
+        address: '',
+        medicalInfo: '',
+        sharingType: '',
+        acType: '',
+        studentPhoto: null,
+        aadhaar: null,
+        collegeId: null,
         termsAgreed: false,
       },
     };
   },
   methods: {
     goBack() {
-      this.$router.push({name: 'StudentDashboard'} );
-    },
-    submitApplication() {
-      console.log('Application submitted:', this.form);
-      alert('Application submitted successfully!');
       this.$router.push({ name: 'StudentDashboard' });
+    },
+    handleFileUpload(field, event) {
+      this.form[field] = event.target.files[0];
+    },
+    async submitApplication() {
+      if (!this.form.termsAgreed) {
+        alert('Please agree to the hostel rules and regulations.');
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('fullName', this.form.fullName);
+        formData.append('rollNumber', this.form.rollNumber);
+        formData.append('branchYear', this.form.branchYear);
+        formData.append('gender', this.form.gender);
+        formData.append('phone', this.form.phone);
+        formData.append('parentPhone', this.form.parentPhone);
+        formData.append('address', this.form.address);
+        formData.append('medicalInfo', this.form.medicalInfo);
+        formData.append('sharingType', this.form.sharingType);
+        formData.append('acType', this.form.acType);
+        formData.append('studentPhoto', this.form.studentPhoto);
+        formData.append('aadhaar', this.form.aadhaar);
+        formData.append('collegeId', this.form.collegeId);
+
+        await axios.post('http://localhost:5000/api/v1/room-application', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        alert('Application submitted successfully!');
+        this.$router.push({ name: 'StudentDashboard' });
+      } catch (error) {
+        console.error('Error submitting application:', error);
+        alert('Failed to submit application. Please check your inputs and try again.');
+      }
     },
   },
 };
 </script>
+
+
+
 
 <style scoped>
 .room-application-container {
@@ -164,7 +269,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  
 }
 
 .form-row {

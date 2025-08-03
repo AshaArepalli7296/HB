@@ -1,4 +1,4 @@
-  <template>
+   <template>
     <Navbar_Student/><div class ="Theme">
   <div class="leave-application-container">
     <div class="cards-wrapper">
@@ -94,6 +94,10 @@
             </div>
             <div class="leave-reason">{{ leave.reason }}</div>
             <div class="leave-contact">Contact: {{ leave.emergencyContact }}</div>
+            <div v-if="leave.status === 'Approved' || leave.status === 'Rejected'" class="leave-warden">
+              <strong>{{ leave.status }} by:</strong>   {{ leave.wardenName && leave.wardenName.trim() ? leave.wardenName : 'Unknown' }}
+            </div>
+
             <div class="leave-actions" v-if="leave.status === 'Pending'">
               <button class="cancel-btn" @click="cancelLeave(leave.id)">Cancel</button>
             </div>
@@ -158,7 +162,8 @@ export default {
           toDate: leave.endDate,
           reason: leave.reason,
           emergencyContact: leave.emergencyContact,
-          status: leave.status.charAt(0).toUpperCase() + leave.status.slice(1)
+          status: leave.status.charAt(0).toUpperCase() + leave.status.slice(1),
+          wardenName: leave.wardenName || '' 
         }));
       })
       .catch(err => {
@@ -524,4 +529,11 @@ footer {
     font-size: 20px;
   }
 }
+
+.leave-warden {
+  color: #333;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
 </style>

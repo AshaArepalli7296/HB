@@ -1,4 +1,4 @@
-import asyncHandler from '../utils/asyncHandler.js';
+ import asyncHandler from '../utils/asyncHandler.js';
 import Leave from '../models/Leave.model.js';
 import User from '../models/User.model.js';
 import sendEmail from '../services/email.service.js';
@@ -78,6 +78,8 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
   leave.status = status;
   leave.wardenComment = comment || '';
   leave.updatedAt = new Date();
+  leave.wardenName = req.user.fullName || req.user.name || 'Unknown Warden';
+
   
   await leave.save();
 
@@ -118,4 +120,23 @@ export const getLeaveStats = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: 'Leave deleted successfully' });
 });
+
+// GET /api/v1/leave/student-stats
+ export const getStudentLeaveStats = async (req, res) => {
+  try {
+    const studentId = req.user._id;
+
+    const approved = await Leave.countDocuments({ student: studentId, status: "approved" });
+    const pending = await Leave.countDocuments({ student: studentId, status: "pending" });
+
+    console.log("approved: ", approved);
+    console.log("pending: ", pending);
+
+    res.status(200).json({ approved, pending });
+  } catch (error) {
+    console.error("Error fetching leave stats:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 
